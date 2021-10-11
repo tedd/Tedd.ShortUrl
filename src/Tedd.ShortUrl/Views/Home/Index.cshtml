@@ -31,3 +31,15 @@
 		</p>
 	}
 </div>
+
+@if (!string.IsNullOrEmpty(Model.GoogleAnalyticsId)) {
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=@Model.GoogleAnalyticsId"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '@Model.GoogleAnalyticsId');
+</script>
+}

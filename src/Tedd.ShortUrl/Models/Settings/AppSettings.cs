@@ -10,5 +10,6 @@ namespace Tedd.ShortUrl.Models.Settings
         public CreateSettings Create { get; set; }
         public SecuritySettings Security { get; set; }
         public CacheSettings Cache { get; set; }
+        public GoogleSettings Google { get; set; }
     }
 }

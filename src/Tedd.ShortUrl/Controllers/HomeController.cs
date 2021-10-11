@@ -21,18 +21,23 @@ namespace Tedd.ShortUrl.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ShortUrlService _shortUrlService;
+        private readonly AppSettings _config;
 
-        public HomeController(ILogger<HomeController> logger, ShortUrlService shortUrlService)
+        public HomeController(ILogger<HomeController> logger, ShortUrlService shortUrlService, IOptions<AppSettings> config)
         {
             _logger = logger;
             _shortUrlService = shortUrlService;
+            _config = config.Value;
         }
 
         [Route("")]
         public async Task<IActionResult> Index(IndexPostRequest request)
         {
             request.Url = request.Url?.Trim();
-            var model = new IndexViewModel();
+            var model = new IndexViewModel()
+            {
+                GoogleAnalyticsId = _config.Google.AnalyticsId
+            };
             if (!string.IsNullOrEmpty(request.Url))
             {
                 // Check if URL is valid
@@ -65,7 +70,7 @@ namespace Tedd.ShortUrl.Controllers
         public async Task<IActionResult> Index(string key)
         {
             // Look up URL and redirect
-            UrlItem? item= null;
+            UrlItem? item = null;
             try
             {
                 item = await _shortUrlService.GetAsync(key);
@@ -73,19 +78,21 @@ namespace Tedd.ShortUrl.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Fetching short url for: {key}");
-                var model = new IndexViewModel();
-                model.ErrorMessage = "Error creating short url. Check error logs for details.";
-                return View(model);
+                return View(new IndexViewModel()
+                {
+                    GoogleAnalyticsId = _config.Google.AnalyticsId,
+                    ErrorMessage = "Error creating short url. Check error logs for details."
+                });
             }
 
             if (item == null || item.Expires != null && item.Expires < DateTime.Now)
             {
                 // Unknown key
-                var model = new IndexViewModel
+                return View(new IndexViewModel
                 {
+                    GoogleAnalyticsId = _config.Google.AnalyticsId,
                     Text = "Unknown short url"
-                };
-                return View(model);
+                });
             }
 
             // Found it, redirect user there
