@@ -1,9 +1,9 @@
 # Tedd.ShortUrl
-Simple URL shortening in ASP.Net 5.0 using EF Core and MSSQL backend.
+Simple URL shortening in ASP.Net 6.0 using EF Core and MSSQL backend.
 
 ## Web UI
 
-A simple web ui for entering URL and returning shortened URL. It uses ASP.Net 5.0 MVC and POST back to controller.
+A sample web UI for entering URL and returning shortened URL.
 
 ## Web API
 
