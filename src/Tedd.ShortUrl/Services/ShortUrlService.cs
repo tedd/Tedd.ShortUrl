@@ -43,7 +43,13 @@ namespace Tedd.ShortUrl.Services
         }
 
         internal async Task<UrlItem?> GetAsync(string key) => await
-            _cache.GetOrCreateAsync<UrlItem>(key, entry => _dbContext.Urls.FirstOrDefaultAsync(u => u.Key == key));
+            _cache.GetOrCreateAsync<UrlItem>(key, async entry => {
+
+                var item = await _dbContext.Urls.FirstOrDefaultAsync(u => u.Key == key);
+                if (item == null)
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_config.Cache.NegativeCacheTimeoutSeconds);
+                return item;
+                });
 
 
         internal async Task CreateAsync(UrlItem urlItem)
