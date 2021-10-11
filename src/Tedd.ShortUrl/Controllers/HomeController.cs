@@ -10,6 +10,7 @@ using Tedd.ShortUrl.Database;
 using Tedd.ShortUrl.Models;
 using Tedd.ShortUrl.Models.Home;
 using Tedd.ShortUrl.Models.Settings;
+using Tedd.ShortUrl.Services;
 using Tedd.ShortUrl.Utils;
 
 namespace Tedd.ShortUrl.Controllers
@@ -17,18 +18,16 @@ namespace Tedd.ShortUrl.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ShortUrlDbContext _dbContext;
-        private readonly AppSettings _config;
+        private readonly ShortUrlService _shortUrlService;
 
-        public HomeController(ILogger<HomeController> logger, ShortUrlDbContext dbContext, IOptions<AppSettings> config)
+        public HomeController(ILogger<HomeController> logger, ShortUrlService shortUrlService)
         {
             _logger = logger;
-            _dbContext = dbContext;
-            _config = config.Value;
+            _shortUrlService = shortUrlService;
         }
 
         [Route("")]
-        public IActionResult Index(IndexPostRequest request)
+        public async Task<IActionResult> Index(IndexPostRequest request)
         {
             request.Url = request.Url?.Trim();
             var model = new IndexViewModel();
@@ -41,17 +40,9 @@ namespace Tedd.ShortUrl.Controllers
                     return View(model);
                 }
 
-                //  Create URL
-                var key = Helpers.GetRandomKey(_config.Create);
-                var item = new UrlItem()
-                {
-                    Key = key,
-                    Url = request.Url
-                };
-                _dbContext.Urls.Add(item);
-                _dbContext.SaveChanges();
+                var item = await _shortUrlService.CreateAsync(request.Url);
 
-                var shortUrl = Helpers.GetShortUrl(Request, key);
+                var shortUrl = Helpers.GetShortUrl(Request, item.Key);
                 model.Text = $"New short url created";
                 model.Url = shortUrl;
             }
@@ -62,10 +53,10 @@ namespace Tedd.ShortUrl.Controllers
 
 
         [Route("{key}")]
-        public IActionResult Index(string key)
+        public async Task<IActionResult> Index(string key)
         {
             // Look up URL and redirect
-            var item = _dbContext.Urls.FirstOrDefault(u => u.Key == key);
+            var item = await _shortUrlService.GetAsync(key);
 
             if (item == null || item.Expires != null && item.Expires < DateTime.Now)
             {

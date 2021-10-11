@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tedd.ShortUrl.Database;
 using Tedd.ShortUrl.Models.Settings;
+using Tedd.ShortUrl.Services;
 
 namespace Tedd.ShortUrl
 {
@@ -34,6 +35,7 @@ namespace Tedd.ShortUrl
 
             // Database setup
             services.AddDbContext<ShortUrlDbContext>(options => options.UseSqlServer(config.Database.ConnectionString), ServiceLifetime.Scoped);
+            services.AddScoped<ShortUrlService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
