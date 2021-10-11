@@ -51,8 +51,6 @@ namespace Tedd.ShortUrl.Controllers
             return View(model);
         }
 
-
-
         [Route("{key}")]
         public async Task<IActionResult> Index(string key)
         {
