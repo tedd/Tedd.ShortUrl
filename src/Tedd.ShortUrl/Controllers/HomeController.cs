@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using Tedd.ShortUrl.Database;
 using Tedd.ShortUrl.Models;
 using Tedd.ShortUrl.Models.Home;
@@ -41,7 +43,15 @@ namespace Tedd.ShortUrl.Controllers
                 }
 
                 var urlItem = new UrlItem() { Url = request.Url };
-                await _shortUrlService.CreateAsync(urlItem);
+                try
+                {
+                    await _shortUrlService.CreateAsync(urlItem);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Creating short url for: {url}");
+                    model.ErrorMessage = "Error creating short url. Check error logs for details.";
+                }
 
                 var shortUrl = Helpers.GetShortUrl(Request, urlItem.Key);
                 model.Text = $"New short url created";
@@ -55,7 +65,18 @@ namespace Tedd.ShortUrl.Controllers
         public async Task<IActionResult> Index(string key)
         {
             // Look up URL and redirect
-            var item = await _shortUrlService.GetAsync(key);
+            UrlItem? item= null;
+            try
+            {
+                item = await _shortUrlService.GetAsync(key);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Fetching short url for: {key}");
+                var model = new IndexViewModel();
+                model.ErrorMessage = "Error creating short url. Check error logs for details.";
+                return View(model);
+            }
 
             if (item == null || item.Expires != null && item.Expires < DateTime.Now)
             {

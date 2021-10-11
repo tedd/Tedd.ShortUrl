@@ -1,22 +1,33 @@
 ﻿@{
-    ViewData["Title"] = "Create short url";
+	ViewData["Title"] = "Create short url";
 }
 @model Tedd.ShortUrl.Models.Home.IndexViewModel
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>
-        Create new ShortURL
-        <form asp-controller="Home" asp-action="Index">
-            <input name="Url" type="text"/>
-            <input type="submit"/>
-        </form>
-    </p>
-    <p>
-        @Model.Text<br />
-        @if (!string.IsNullOrEmpty(Model.Url))
-        {
-            <a href="@Model.Url" target="_blank">@Model.Url</a>
-        }
-    </p>
+	<h1 class="display-4">Welcome</h1>
+	<p>
+		Create new short url
+		<form asp-controller="Home" asp-action="Index">
+			<input name="Url" type="text" />
+			<input type="submit" />
+		</form>
+	</p>
+	@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+	{
+		<p>
+			<div class="alert alert-danger" role="alert">
+				@Model.ErrorMessage
+			</div>
+		</p>
+	}
+	else
+	{
+		<p>
+			@Model.Text<br />
+			@if (!string.IsNullOrEmpty(Model.Url))
+			{
+				<a href="@Model.Url" target="_blank">@Model.Url</a>
+			}
+		</p>
+	}
 </div>

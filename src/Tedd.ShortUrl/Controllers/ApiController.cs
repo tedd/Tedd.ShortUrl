@@ -3,8 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using Tedd.ShortUrl.Database;
 using Tedd.ShortUrl.Models.Api;
 using Tedd.ShortUrl.Models.Settings;
@@ -59,7 +61,19 @@ namespace Tedd.ShortUrl.Controllers
                 Metadata = request.Metadata
             };
 
-            await _shortUrlService.CreateAsync(urlItem);
+            try
+            {
+                await _shortUrlService.CreateAsync(urlItem);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"API: Creating short url for: {request.Url}");
+                return new CreateResponse()
+                {
+                    Success = false,
+                    ErrorMessage = "Error: Have admin check logs for more information."
+                };
+            }
 
             return new CreateResponse()
             {
@@ -91,7 +105,20 @@ namespace Tedd.ShortUrl.Controllers
                 };
             }
 
-            var urlItem = await _shortUrlService.GetAsync(request.Key);
+            UrlItem? urlItem;
+            try
+            {
+                urlItem = await _shortUrlService.GetAsync(request.Key);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"API: Fetching short url for: {request.Key}");
+                return new GetResponse()
+                {
+                    Success = false,
+                    ErrorMessage = "Error: Have admin check logs for more information."
+                };
+            }
 
             if (urlItem == null)
             {
