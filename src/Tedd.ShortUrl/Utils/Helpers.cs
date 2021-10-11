@@ -12,6 +12,6 @@ namespace Tedd.ShortUrl.Utils
     {
         public static string GetBaseUrl(HttpRequest request) => $"{request.Scheme}://{request.Host}{request.PathBase}";
         public static string GetShortUrl(HttpRequest request, string key) => $"{Helpers.GetBaseUrl(request)}/{key}";
-        public static string GetRandomKey(CreateSettings settings) => (new Random()).NextString("abcd123", 5);
+        public static string GetRandomKey(CreateSettings settings) => (new Random()).NextString(settings.KeyChars, settings.KeyLength);
     }
 }

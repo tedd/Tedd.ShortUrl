@@ -42,10 +42,11 @@ namespace Tedd.ShortUrl.Services
             }
         }
 
-        internal async Task<UrlItem?> GetAsync(string key) => await _dbContext.Urls.FirstOrDefaultAsync(u => u.Key == key);
-            
+        internal async Task<UrlItem?> GetAsync(string key) => await
+            _cache.GetOrCreateAsync<UrlItem>(key, entry => _dbContext.Urls.FirstOrDefaultAsync(u => u.Key == key));
 
-        internal async Task<UrlItem> CreateAsync(string url)
+
+        internal async Task CreateAsync(UrlItem urlItem)
         {
             //  Find free random id
             string key;
@@ -54,17 +55,16 @@ namespace Tedd.ShortUrl.Services
                 key = Helpers.GetRandomKey(_config.Create);
             } while (_keys.ContainsKey(key));
 
-            var urlItem = new UrlItem()
-            {
-                Key = key,
-                Url = url
-            };
+            urlItem.Key = key;
+
             // Add item to key cache + database
             _keys.TryAdd(key, 0);
             _dbContext.Urls.Add(urlItem);
-            _dbContext.SaveChangesAsync();
-            
-            return urlItem;
+            await _dbContext.SaveChangesAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions();
+            _cache.Set<UrlItem>(key, urlItem, cacheEntryOptions);
+
         }
 
 

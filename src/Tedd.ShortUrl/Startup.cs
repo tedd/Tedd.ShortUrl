@@ -35,6 +35,10 @@ namespace Tedd.ShortUrl
 
             // Database setup
             services.AddDbContext<ShortUrlDbContext>(options => options.UseSqlServer(config.Database.ConnectionString), ServiceLifetime.Scoped);
+            services.AddMemoryCache(options =>
+            {
+                options.SizeLimit = config.Cache.ItemLimit;
+            });
             services.AddScoped<ShortUrlService>();
         }
 

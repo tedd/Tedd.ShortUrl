@@ -40,9 +40,10 @@ namespace Tedd.ShortUrl.Controllers
                     return View(model);
                 }
 
-                var item = await _shortUrlService.CreateAsync(request.Url);
+                var urlItem = new UrlItem() { Url = request.Url };
+                await _shortUrlService.CreateAsync(urlItem);
 
-                var shortUrl = Helpers.GetShortUrl(Request, item.Key);
+                var shortUrl = Helpers.GetShortUrl(Request, urlItem.Key);
                 model.Text = $"New short url created";
                 model.Url = shortUrl;
             }

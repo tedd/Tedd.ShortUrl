@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Tedd.ShortUrl.Database;
 using Tedd.ShortUrl.Models.Api;
 using Tedd.ShortUrl.Models.Settings;
+using Tedd.ShortUrl.Services;
 using Tedd.ShortUrl.Utils;
 
 namespace Tedd.ShortUrl.Controllers
@@ -15,18 +18,20 @@ namespace Tedd.ShortUrl.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ShortUrlDbContext _dbContext;
+        private readonly ShortUrlService _shortUrlService;
         private readonly AppSettings _config;
 
-        public ApiController(ILogger<HomeController> logger, ShortUrlDbContext dbContext, IOptions<AppSettings> config)
+        public ApiController(ILogger<HomeController> logger, ShortUrlDbContext dbContext, IOptions<AppSettings> config, ShortUrlService shortUrlService)
         {
             _logger = logger;
             _dbContext = dbContext;
+            _shortUrlService = shortUrlService;
             _config = config.Value;
         }
 
         [Route("Create")]
         [HttpPost]
-        public CreateResponse Create([FromBody] CreateRequest request)
+        public async Task<CreateResponse> Create([FromBody] CreateRequest request)
         {
             // Security: Request will only be allowed if "RequireTokenForGet" is false OR request.AuthToken is in list or in database
             if (_config.Security.RequireTokenForGet
@@ -46,28 +51,28 @@ namespace Tedd.ShortUrl.Controllers
             }
 
             // Create item
-            var item = new UrlItem()
+            var urlItem = new UrlItem()
             {
                 Key = Helpers.GetRandomKey(_config.Create),
                 Expires = request.Expires,
                 Url = request.Url,
                 Metadata = request.Metadata
             };
-            _dbContext.Urls.Add(item);
-            _dbContext.SaveChanges();
+
+            await _shortUrlService.CreateAsync(urlItem);
 
             return new CreateResponse()
             {
                 Success = true,
-                Key = item.Key,
-                ShortUrl = Helpers.GetShortUrl(Request, item.Key),
+                Key = urlItem.Key,
+                ShortUrl = Helpers.GetShortUrl(Request, urlItem.Key),
                 Expires = request.Expires
             };
         }
 
         [Route("Get")]
         [HttpPost] // Post because token will be logged in weblog if not
-        public GetResponse Get([FromBody] GetRequest request)
+        public async Task<GetResponse> Get([FromBody] GetRequest request)
         {
             // Security: Request will only be allowed if "RequireTokenForGet" is false OR request.AuthToken is in list or in database
             if (_config.Security.RequireTokenForGet
@@ -86,8 +91,9 @@ namespace Tedd.ShortUrl.Controllers
                 };
             }
 
-            var item = _dbContext.Urls.FirstOrDefault(w => w.Key == request.Key);
-            if (item == null)
+            var urlItem = await _shortUrlService.GetAsync(request.Key);
+
+            if (urlItem == null)
             {
                 // We could not find this entry
                 return new GetResponse()
@@ -100,10 +106,10 @@ namespace Tedd.ShortUrl.Controllers
             // Success, return data
             return new GetResponse()
             {
-                Url = item.Url,
-                ShortUrl = Helpers.GetShortUrl(Request, item.Key),
-                Expires = item.Expires,
-                Metadata = item.Metadata,
+                Url = urlItem.Url,
+                ShortUrl = Helpers.GetShortUrl(Request, urlItem.Key),
+                Expires = urlItem.Expires,
+                Metadata = urlItem.Metadata,
                 Success = true
             };
         }
