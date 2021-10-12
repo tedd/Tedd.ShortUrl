@@ -3,15 +3,27 @@
 }
 @model Tedd.ShortUrl.Models.Home.IndexViewModel
 
-<div class="text-center">
-	<h1 class="display-4">Welcome</h1>
-	<p>
-		Create new short url
-		<form asp-controller="Home" asp-action="Index">
-			<input name="Url" type="text" />
-			<input type="submit" />
-		</form>
+<h1 class="display-4 text-center">Create short url</h1>
+<form class="text-center g-3" id="form" asp-controller="Home" asp-action="Index">
+	<label for="Url" class="visually-hidden">Url</label>
+	<input type="text" class="form-control" style="max-width: 480px; display: inline !important;" name="Url" id="Url" placeholder="Url" />
+	@if (!string.IsNullOrEmpty(Model.GoogleReCaptchaKey))
+	{
+		<script>
+			function onSubmit(token) {
+				document.getElementById("form").submit();
+			}
+		</script>
+		<button class="btn btn-primary mb-3 g-recaptcha" data-sitekey="@(Model.GoogleReCaptchaKey)" data-callback='onSubmit' data-action='submit'>Create</button>
+	}
+	else
+	{
+		<button class="btn btn-primary mb-3" data-sitekey="@(Model.GoogleReCaptchaKey)" data-callback='onSubmit' data-action='submit'>Create</button>
+	}
+
+</form>
 	</p>
+<div class="text-center">
 	@if (!string.IsNullOrEmpty(Model.ErrorMessage))
 	{
 		<p>
@@ -31,15 +43,20 @@
 		</p>
 	}
 </div>
+@section Head {
+	@if (!string.IsNullOrEmpty(Model.GoogleReCaptchaKey)) {
+<script src="https://www.google.com/recaptcha/api.js"></script>
+	}
 
-@if (!string.IsNullOrEmpty(Model.GoogleAnalyticsId)) {
-	<!-- Global site tag (gtag.js) - Google Analytics -->
+	@if (!string.IsNullOrEmpty(Model.GoogleAnalyticsId)) {
+<!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=@Model.GoogleAnalyticsId"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
 
-  gtag('config', '@Model.GoogleAnalyticsId');
+	gtag('config', '@Model.GoogleAnalyticsId');
 </script>
+	}
 }

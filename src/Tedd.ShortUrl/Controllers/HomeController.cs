@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Options;
 
 using Tedd.ShortUrl.Database;
 using Tedd.ShortUrl.Models;
+using Tedd.ShortUrl.Models.Google;
 using Tedd.ShortUrl.Models.Home;
 using Tedd.ShortUrl.Models.Settings;
 using Tedd.ShortUrl.Services;
@@ -36,10 +39,37 @@ namespace Tedd.ShortUrl.Controllers
             request.Url = request.Url?.Trim();
             var model = new IndexViewModel()
             {
-                GoogleAnalyticsId = _config.Google.AnalyticsId
+                GoogleAnalyticsId = _config.Google.AnalyticsId,
+                GoogleReCaptchaKey = _config.Google.RecaptchaV3SiteKey
             };
+
+            // Create URL
             if (!string.IsNullOrEmpty(request.Url))
-            {
+            {  
+                // Check Google Captcha
+                if (!string.IsNullOrWhiteSpace(_config.Google.RecaptchaV3SecretKey))
+                {
+                    using var client = new HttpClient();
+                    var parameters = new Dictionary<string, string>() { { "secret", _config.Google.RecaptchaV3SecretKey }, { "response", request.G_Recaptcha_Response } };
+                    var form = new FormUrlEncodedContent(parameters);
+                    var gResponse = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", form);
+                    if (!gResponse.IsSuccessStatusCode)
+                    {
+                        _logger.LogError($"Failed reCaptcha communication: {gResponse.StatusCode} {gResponse.ReasonPhrase}");
+                        model.ErrorMessage = "Failed captcha communication.";
+                        return View(model);
+                    }
+                    var reCaptcha = await gResponse.Content.ReadFromJsonAsync<ReCaptchaVerifyResponse>();
+                    if (!reCaptcha.success)
+                    {
+                        _logger.LogWarning($"User failed reCaptcha. Error code(s): {string.Join(", ", reCaptcha.ErrorCodes ?? new string[] { "null" })}.");
+                        model.ErrorMessage = "Failed captcha test.";
+                        return View(model);
+                    }
+                }
+
+
+
                 // Check if URL is valid
                 if (!Uri.TryCreate(request.Url, UriKind.Absolute, out var url))
                 {
