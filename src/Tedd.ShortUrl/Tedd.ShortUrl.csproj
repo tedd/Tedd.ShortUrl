@@ -6,7 +6,6 @@
     <LangVersion>latest</LangVersion>
     <UserSecretsId>0479573c-3b47-42a8-b801-558b28d235d1</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <PublishTrimmed>true</PublishTrimmed>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
