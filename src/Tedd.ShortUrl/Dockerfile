@@ -11,11 +11,11 @@ COPY ["src/Tedd.ShortUrl/Tedd.ShortUrl.csproj", "Tedd.ShortUrl/"]
 RUN dotnet restore "Tedd.ShortUrl/Tedd.ShortUrl.csproj"
 COPY . .
 WORKDIR "/src/Tedd.ShortUrl"
-RUN dotnet build "Tedd.ShortUrl.csproj" -c Release -o /app/build
+RUN dotnet build "/src/Tedd.ShortUrl/Tedd.ShortUrl.csproj" -c Release -o /app/build
 
 FROM build AS publish
 WORKDIR "/src/Tedd.ShortUrl"
-RUN dotnet publish "Tedd.ShortUrl.csproj" -c Release -o /app/publish
+RUN dotnet publish "/src/Tedd.ShortUrl/Tedd.ShortUrl.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
