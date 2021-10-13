@@ -14,6 +14,7 @@ WORKDIR "/src/Tedd.ShortUrl"
 RUN dotnet build "Tedd.ShortUrl.csproj" -c Release -o /app/build
 
 FROM build AS publish
+WORKDIR "/src/Tedd.ShortUrl"
 RUN dotnet publish "Tedd.ShortUrl.csproj" -c Release -o /app/publish
 
 FROM base AS final
