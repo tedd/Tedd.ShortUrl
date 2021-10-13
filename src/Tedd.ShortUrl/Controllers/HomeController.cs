@@ -88,7 +88,7 @@ namespace Tedd.ShortUrl.Controllers
                     model.ErrorMessage = "Error creating short url. Check error logs for details.";
                 }
 
-                var shortUrl = Helpers.GetShortUrl(Request, urlItem.Key);
+                var shortUrl = Helpers.GetShortUrl(_config.Url.OverrideUrl, Request, urlItem.Key);
                 model.Text = $"New short url created";
                 model.Url = shortUrl;
             }

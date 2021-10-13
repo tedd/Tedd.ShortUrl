@@ -57,7 +57,7 @@ namespace Tedd.ShortUrl.Services
             for (var i = 0; i < 10; i++)
             {
                 //  Create random id
-                key = Helpers.GetRandomKey(_config.Create);
+                key = Helpers.GetRandomKey(_config.Url);
 
                 // Try to add item to database
                 urlItem.Key = key;

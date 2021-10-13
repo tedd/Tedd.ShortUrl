@@ -55,7 +55,7 @@ namespace Tedd.ShortUrl.Controllers
             // Create item
             var urlItem = new UrlItem()
             {
-                Key = Helpers.GetRandomKey(_config.Create),
+                Key = Helpers.GetRandomKey(_config.Url),
                 Expires = request.Expires,
                 Url = request.Url,
                 Metadata = request.Metadata
@@ -79,7 +79,7 @@ namespace Tedd.ShortUrl.Controllers
             {
                 Success = true,
                 Key = urlItem.Key,
-                ShortUrl = Helpers.GetShortUrl(Request, urlItem.Key),
+                ShortUrl = Helpers.GetShortUrl(_config.Url.OverrideUrl, Request, urlItem.Key),
                 Expires = request.Expires
             };
         }
@@ -134,7 +134,7 @@ namespace Tedd.ShortUrl.Controllers
             return new GetResponse()
             {
                 Url = urlItem.Url,
-                ShortUrl = Helpers.GetShortUrl(Request, urlItem.Key),
+                ShortUrl = Helpers.GetShortUrl(_config.Url.OverrideUrl, Request, urlItem.Key),
                 Expires = urlItem.Expires,
                 Metadata = urlItem.Metadata,
                 Success = true
