@@ -8,7 +8,6 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <PublishTrimmed>true</PublishTrimmed>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <StartupObject>Tedd.ShortUrl.Program</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
