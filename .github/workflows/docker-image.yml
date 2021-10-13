@@ -37,7 +37,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
-          context: Tedd.ShortUrl/src/Tedd.ShortUrl
+          path: Tedd.ShortUrl/src/Tedd.ShortUrl
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
