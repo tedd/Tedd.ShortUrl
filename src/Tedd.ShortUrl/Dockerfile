@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["src/Tedd.ShortUrl/Tedd.ShortUrl.csproj", "Tedd.ShortUrl/"]
+COPY ["Tedd.ShortUrl/Tedd.ShortUrl.csproj", "Tedd.ShortUrl/"]
 RUN dotnet restore "Tedd.ShortUrl/Tedd.ShortUrl.csproj"
 COPY . .
 WORKDIR "/src/Tedd.ShortUrl"
