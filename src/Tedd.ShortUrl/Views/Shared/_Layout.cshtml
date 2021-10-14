@@ -13,22 +13,22 @@
 	@*<link rel="stylesheet" href="~/css/site.css" />*@
 	@await RenderSectionAsync("Head", required: false)
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 	<div class="container">
 		<main role="main" class="pb-3">
 			@RenderBody()
 		</main>
 	</div>
 
-	<footer class="border-top footer text-muted text-center">
+	<footer class="border-top footer text-muted text-center mt-auto">
 		<div class="container">
 			<a class="github-button" href="https://github.com/tedd" data-size="large" aria-label="Follow @@tedd on GitHub">Follow @@tedd</a> &nbsp;
 			<a class="github-button" href="https://github.com/tedd/Tedd.ShortUrl" data-size="large" aria-label="See tedd/Tedd.ShortUrl on GitHub">View on GitHub</a> &nbsp;
-			<a class="github-button" href="https://github.com/tedd/Tedd.ShortUrl" data-icon="octicon-star" data-size="large" aria-label="Star tedd/Tedd.ShortUrl on GitHub">Star</a> &nbsp;
+@*			<a class="github-button" href="https://github.com/tedd/Tedd.ShortUrl" data-icon="octicon-star" data-size="large" aria-label="Star tedd/Tedd.ShortUrl on GitHub">Star</a> &nbsp;
 			<a class="github-button" href="https://github.com/tedd/Tedd.ShortUrl/archive/HEAD.zip" data-icon="octicon-download" data-size="large" aria-label="Download tedd/Tedd.ShortUrl on GitHub">Download</a> &nbsp;
-			<a class="github-button" href="https://github.com/tedd/Tedd.ShortUrl/fork" data-icon="octicon-repo-forked" data-size="large" aria-label="Fork tedd/Tedd.ShortUrl on GitHub">Fork</a>
+			<a class="github-button" href="https://github.com/tedd/Tedd.ShortUrl/fork" data-icon="octicon-repo-forked" data-size="large" aria-label="Fork tedd/Tedd.ShortUrl on GitHub">Fork</a>*@
 			<br />
-			Tedd Hansen &copy; 2021 
+			Tedd Hansen &copy; 2021 GNU Lesser General Public License v2.1
 		</div>
 	</footer>
 	@* <script src="~/lib/jquery/dist/jquery.min.js"></script>
