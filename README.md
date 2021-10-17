@@ -1,22 +1,24 @@
 # Tedd.ShortUrl
 Simple URL shortening in ASP.Net 6.0 using EF Core and MSSQL backend.
 
+Sample page: [https://go.tedd.no](https://go.tedd.no) 
+
 ## Docker image
 
-Docker image available at: https://github.com/tedd/Tedd.ShortUrl/pkgs/container/tedd.shorturl
+Docker image available at: [https://github.com/tedd/Tedd.ShortUrl/pkgs/container/tedd.shorturl](https://github.com/tedd/Tedd.ShortUrl/pkgs/container/tedd.shorturl)
 
 `docker pull ghcr.io/tedd/tedd.shorturl:main`
 
 Supports setting environment variables in docker that will override appsettings.json.
 
-| Environment variable          | Value                          |
-| ----------------------------- | ------------------------------ |
-| Url:OverrideUrl               |                                |
+| Environment variable          | Value                                                        |
+| ----------------------------- | ------------------------------------------------------------ |
+| Url:OverrideUrl               | https://go.domain.com/                                       |
 | Database:ConnectionString     | Server=tcp:\*\*\*,1433;Initial Catalog=\*\*\*;Persist Security Info=False;User ID=\*\*\*;Password=\*\*\*;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30; |
-| Security:AuthenticationTokens | YourLongAndRandomSecurityToken |
-| Google:AnalyticsId            |                                |
-| Google:RecaptchaV3SiteKey     |                                |
-| Google:RecaptchaV3SecretKey   |                                |
+| Security:AuthenticationTokens | YourLongAndRandomSecurityToken                               |
+| Google:AnalyticsId            |                                                              |
+| Google:RecaptchaV3SiteKey     |                                                              |
+| Google:RecaptchaV3SecretKey   |                                                              |
 
 ## Docker compose example
 
